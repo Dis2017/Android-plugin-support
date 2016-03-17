@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">DynamicPlugin</string>
+    <string name="startActivity">start Plugin Activity</string>
+    <string name="startSettingsActivity">start Plugin Settings Activity</string>
+    <string name="title_activity_main2">PluginService</string>
+    <string name="start">start Plugin Service</string>
+    <string name="stop">stop Plugin Service</string>
+    <string name="bind">bind Plugin Service</string>
+    <string name="unbind">unbind Plugin Service</string>
+    <string name="registerReceiver">register Plugin Receiver</string>
+    <string name="unregisterReceiver">unregister Plugin Receiver</string>
+    <string name="sendBroadcast">send Plugin Broadcast</string>
+    <string name="sendStaticBroadcast">send Static Plugin Broadcast</string>
+    <string name="query">query Plugin</string>
+    <string name="insert">insert Plugin</string>
+    <string name="update">update Plugin</string>
+    <string name="delete">delete Plugin</string>
+</resources>
