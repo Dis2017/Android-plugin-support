@@ -117,12 +117,7 @@ public class DynamicApkManager {
             DynamicActivityThread.getInstance().installContentProviders(info.providers);
             updateMainActivity();
             registerStaticBroadcastReceiver(info);
-            mDynamicPackages.put(info.packageName, info);
         }
-    }
-
-    public DynamicApkInfo getPackage(String pkgName) {
-        return mDynamicPackages.get(pkgName);
     }
 
     private void registerStaticBroadcastReceiver(DynamicApkInfo info) {

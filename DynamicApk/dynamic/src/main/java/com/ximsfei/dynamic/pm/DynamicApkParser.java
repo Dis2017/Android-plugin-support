@@ -1204,8 +1204,8 @@ public class DynamicApkParser {
                 Hooks.getStyleable("AndroidManifestApplication_icon"), 0);
         ai.logo = sa.getResourceId(
                 Hooks.getStyleable("AndroidManifestApplication_logo"), 0);
-        ai.banner = sa.getResourceId(
-                Hooks.getStyleable("AndroidManifestApplication_banner"), 0);
+//        ai.banner = sa.getResourceId(
+//                Hooks.getStyleable("AndroidManifestApplication_banner"), 0);
         ai.theme = sa.getResourceId(
                 Hooks.getStyleable("AndroidManifestApplication_theme"), 0);
         ai.descriptionRes = sa.getResourceId(
@@ -1678,9 +1678,9 @@ public class DynamicApkParser {
 
             a.info.launchMode = sa.getInt(
                     Hooks.getStyleable("AndroidManifestActivity_launchMode"), ActivityInfo.LAUNCH_MULTIPLE);
-            a.info.documentLaunchMode = sa.getInt(
-                    Hooks.getStyleable("AndroidManifestActivity_documentLaunchMode"),
-                    ActivityInfo.DOCUMENT_LAUNCH_NONE);
+//            a.info.documentLaunchMode = sa.getInt(
+//                    Hooks.getStyleable("AndroidManifestActivity_documentLaunchMode"),
+//                    ActivityInfo.DOCUMENT_LAUNCH_NONE);
 //            a.info.maxRecents = sa.getInt(
 //                    Hooks.getStyleable("AndroidManifestActivity_maxRecents"),
 //                    ActivityManager.getDefaultAppRecentsLimitStatic());
@@ -1688,9 +1688,9 @@ public class DynamicApkParser {
             a.info.softInputMode = sa.getInt(
                     Hooks.getStyleable("AndroidManifestActivity_windowSoftInputMode"), 0);
 
-            a.info.persistableMode = sa.getInteger(
-                    Hooks.getStyleable("AndroidManifestActivity_persistableMode"),
-                    ActivityInfo.PERSIST_ROOT_ONLY);
+//            a.info.persistableMode = sa.getInteger(
+//                    Hooks.getStyleable("AndroidManifestActivity_persistableMode"),
+//                    ActivityInfo.PERSIST_ROOT_ONLY);
 
             if (sa.getBoolean(Hooks.getStyleable("AndroidManifestActivity_allowEmbedded"), false)) {
 //                a.info.flags |= ActivityInfo.FLAG_ALLOW_EMBEDDED;
@@ -2744,10 +2744,10 @@ public class DynamicApkParser {
                 outInfo.logo = logoVal;
             }
 
-            int bannerVal = args.sa.getResourceId(args.bannerRes, 0);
-            if (bannerVal != 0) {
-                outInfo.banner = bannerVal;
-            }
+//            int bannerVal = args.sa.getResourceId(args.bannerRes, 0);
+//            if (bannerVal != 0) {
+//                outInfo.banner = bannerVal;
+//            }
 
             TypedValue v = args.sa.peekValue(args.labelRes);
             if (v != null && (outInfo.labelRes=v.resourceId) == 0) {
