@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.UserHandle;
-import android.util.Log;
 
 import com.ximsfei.dynamic.DynamicApkManager;
 import com.ximsfei.dynamic.util.DynamicConstants;
@@ -166,12 +165,8 @@ public class DynamicInstrumentation extends Instrumentation {
     }
 
     private void hookContext(DynamicApkParser.Activity a, Activity activity) {
-        try {
-            mContextImplReflect.setField("mResources")
-                    .set(activity.getBaseContext(), a.owner.resources);
-        } catch (Reflect.ReflectException e) {
-            e.printStackTrace();
-        }
+        mContextImplReflect.setField("mResources")
+                .set(activity.getBaseContext(), a.owner.resources);
         hookActivity(a, activity);
     }
 

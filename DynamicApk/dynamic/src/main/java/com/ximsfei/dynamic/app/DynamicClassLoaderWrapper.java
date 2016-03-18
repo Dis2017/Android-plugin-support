@@ -26,6 +26,7 @@ public class DynamicClassLoaderWrapper extends ClassLoader {
             return mBase.loadClass(className);
         } catch (ClassNotFoundException e) {
         }
+
         int N = mDynamicLoaders.size();
         for (int i=0; i<N; i++) {
             try {

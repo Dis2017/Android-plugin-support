@@ -44,6 +44,9 @@ http://blog.csdn.net/ximsfei/article/details/50884862
 Android动态部署二：APK安装及AndroidManifest.xml解析流程分析
 http://blog.csdn.net/ximsfei/article/details/50886134
 
+Android动态部署三：如何从插件apk中启动Activity（－）
+http://blog.csdn.net/ximsfei/article/details/50926406
+
 ## License
 
 The MIT License (MIT)
