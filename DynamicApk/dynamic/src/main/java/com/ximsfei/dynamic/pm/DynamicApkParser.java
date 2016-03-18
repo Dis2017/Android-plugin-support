@@ -5,10 +5,8 @@ import static com.ximsfei.dynamic.DynamicApkManager.INSTALL_PARSE_FAILED_UNEXPEC
 import static com.ximsfei.dynamic.DynamicApkManager.INSTALL_PARSE_FAILED_BAD_PACKAGE_NAME;
 import static com.ximsfei.dynamic.DynamicApkManager.INSTALL_PARSE_FAILED_MANIFEST_MALFORMED;
 import static com.ximsfei.dynamic.DynamicApkManager.INSTALL_PARSE_FAILED_MANIFEST_EMPTY;
-import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
@@ -40,11 +38,9 @@ import android.util.Log;
 import android.util.TypedValue;
 
 import com.ximsfei.dynamic.DynamicApkManager;
+import com.ximsfei.dynamic.app.DynamicLoadedApk;
 import com.ximsfei.dynamic.util.DynamicConstants;
-import com.ximsfei.dynamic.R;
-import com.ximsfei.dynamic.app.DynamicContextImpl;
 import com.ximsfei.dynamic.reflect.Hooks;
-import com.ximsfei.dynamic.reflect.Reflect;
 import com.ximsfei.dynamic.util.ArrayUtils;
 import com.ximsfei.dynamic.util.FileUtils;
 import com.ximsfei.dynamic.util.XmlUtils;
@@ -62,7 +58,6 @@ import java.security.spec.EncodedKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Set;
 
 import dalvik.system.DexClassLoader;
@@ -71,10 +66,6 @@ import dalvik.system.DexClassLoader;
  * Created by pengfenx on 2/26/2016.
  */
 public class DynamicApkParser {
-    private static final boolean DEBUG_JAR = false;
-    private static final boolean DEBUG_PARSER = false;
-    private static final boolean DEBUG_BACKUP = false;
-
     /** File name in an APK for the Android manifest. */
     private static final String ANDROID_MANIFEST_FILENAME = "AndroidManifest.xml";
 
@@ -213,7 +204,7 @@ public class DynamicApkParser {
         mParseError = INSTALL_SUCCEEDED;
         mArchiveSourcePath = apkFile.getAbsolutePath();
 
-        if (DEBUG_JAR) Log.d(TAG, "Scanning base APK: " + apkPath);
+        Log.d(TAG, "Scanning base APK: " + apkPath);
 
         Resources res;
         XmlResourceParser parser = null;
@@ -244,26 +235,7 @@ public class DynamicApkParser {
             pkg.classLoader = classLoader;
             pkg.assets = assets;
             pkg.resources = res;
-            Application app = null;
-            if (pkg.applicationInfo.packageName != null) {
-                try {
-                    app = (Application) classLoader.loadClass(
-                            pkg.applicationInfo.packageName).newInstance();
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (app == null) {
-                app = new Application();
-            }
-            Reflect.create(ContextWrapper.class)
-                    .setField("mBase")
-                    .set(app, new DynamicContextImpl(context.getApplicationContext(), pkg));
-            pkg.application = app;
+            pkg.application = DynamicLoadedApk.makeApplication(context, classLoader, pkg);
             return pkg;
         } catch (DynamicApkParserException e) {
             throw e;
@@ -1203,10 +1175,6 @@ public class DynamicApkParser {
                     Hooks.getStyleable("AndroidManifestApplication_backupAgent"));
             if (backupAgent != null) {
                 ai.backupAgentName = buildClassName(pkgName, backupAgent, outError);
-                if (DEBUG_BACKUP) {
-                    Log.v(TAG, "android:backupAgent = " + ai.backupAgentName
-                            + " from " + pkgName + "+" + backupAgent);
-                }
 
                 if (sa.getBoolean(
                         Hooks.getStyleable("AndroidManifestApplication_killAfterRestore"),
@@ -1249,17 +1217,17 @@ public class DynamicApkParser {
             owner.mRequiredForAllUsers = true;
         }
 
-        // String restrictedAccountType = sa.getString(R.styleable
-        //         .AndroidManifestApplication_restrictedAccountType);
-        // if (restrictedAccountType != null && restrictedAccountType.length() > 0) {
-        //     owner.mRestrictedAccountType = restrictedAccountType;
-        // }
-
-        // String requiredAccountType = sa.getString(R.styleable
-        //         .AndroidManifestApplication_requiredAccountType);
-        // if (requiredAccountType != null && requiredAccountType.length() > 0) {
-        //     owner.mRequiredAccountType = requiredAccountType;
-        // }
+//        String restrictedAccountType = sa.getString(R.styleable
+//                .AndroidManifestApplication_restrictedAccountType);
+//        if (restrictedAccountType != null && restrictedAccountType.length() > 0) {
+//            owner.mRestrictedAccountType = restrictedAccountType;
+//        }
+//
+//        String requiredAccountType = sa.getString(R.styleable
+//                .AndroidManifestApplication_requiredAccountType);
+//        if (requiredAccountType != null && requiredAccountType.length() > 0) {
+//            owner.mRequiredAccountType = requiredAccountType;
+//        }
 
         if (sa.getBoolean(
                 Hooks.getStyleable("AndroidManifestApplication_debuggable"),
@@ -2712,20 +2680,18 @@ public class DynamicApkParser {
 
         outInfo.hasDefault = outInfo.hasCategory(Intent.CATEGORY_DEFAULT);
 
-        if (DEBUG_PARSER) {
-            final StringBuilder cats = new StringBuilder("Intent d=");
-            cats.append(outInfo.hasDefault);
-            cats.append(", cat=");
-
-            final Iterator<String> it = outInfo.categoriesIterator();
-            if (it != null) {
-                while (it.hasNext()) {
-                    cats.append(' ');
-                    cats.append(it.next());
-                }
-            }
-            Log.d(TAG, cats.toString());
-        }
+//            final StringBuilder cats = new StringBuilder("Intent d=");
+//            cats.append(outInfo.hasDefault);
+//            cats.append(", cat=");
+//
+//            final Iterator<String> it = outInfo.categoriesIterator();
+//            if (it != null) {
+//                while (it.hasNext()) {
+//                    cats.append(' ');
+//                    cats.append(it.next());
+//                }
+//            }
+//            Log.d(TAG, cats.toString());
 
         return true;
     }

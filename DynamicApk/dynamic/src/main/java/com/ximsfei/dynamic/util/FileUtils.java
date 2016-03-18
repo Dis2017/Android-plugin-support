@@ -1,7 +1,5 @@
 package com.ximsfei.dynamic.util;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.text.TextUtils;
 
 import java.nio.charset.StandardCharsets;
@@ -48,7 +46,6 @@ public class FileUtils {
         return res.toString();
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     private static void trimFilename(StringBuilder res, int maxBytes) {
         byte[] raw = res.toString().getBytes(StandardCharsets.UTF_8);
         if (raw.length > maxBytes) {

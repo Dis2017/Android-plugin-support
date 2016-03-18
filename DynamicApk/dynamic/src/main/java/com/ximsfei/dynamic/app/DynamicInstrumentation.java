@@ -1,16 +1,20 @@
 package com.ximsfei.dynamic.app;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application;
+import android.app.Fragment;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.UserHandle;
+import android.util.Log;
 
 import com.ximsfei.dynamic.DynamicApkManager;
 import com.ximsfei.dynamic.util.DynamicConstants;
@@ -35,9 +39,31 @@ public class DynamicInstrumentation extends Instrumentation {
         mInstrumentationReflect = Reflect.create(Instrumentation.class);
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public ActivityResult execStartActivity(
+            Context who, IBinder contextThread, IBinder token, Fragment target,
+            Intent intent, int requestCode, Bundle options) {
+        ActivityInfo ai = resolveActivity(intent, intent.resolveType(who), DynamicConstants.RESOLVE_ACTIVITY);
+
+        if (ai != null) {
+            intent.putExtra(DynamicConstants.DYNAMIC_ACTIVITY_FLAG, ai.name);
+            intent.setClassName(DynamicActivityThread.getInstance().getHostPackageName(),
+                    DynamicConstants.STUB_DYNAMIC_ACTIVITY);
+        }
+        try {
+            return (ActivityResult) mInstrumentationReflect.setMethod("execStartActivity",
+                    Context.class, IBinder.class, IBinder.class, Fragment.class, Intent.class,
+                    int.class, Bundle.class)
+                    .invoke(mBase, who, contextThread, token, target, intent, requestCode, options);
+        } catch (Reflect.ReflectException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public ActivityResult execStartActivity(
             Context who, IBinder contextThread, IBinder token, Activity target,
-            Intent intent, int requestCode, Bundle bundle, UserHandle user) {
+            Intent intent, int requestCode, Bundle options, UserHandle user) {
         ActivityInfo ai = resolveActivity(intent, intent.resolveType(who), DynamicConstants.RESOLVE_ACTIVITY);
 
         if (ai != null) {
@@ -49,7 +75,7 @@ public class DynamicInstrumentation extends Instrumentation {
             return (ActivityResult) mInstrumentationReflect.setMethod("execStartActivity",
                     Context.class, IBinder.class, IBinder.class, Activity.class, Intent.class,
                     int.class, Bundle.class, UserHandle.class)
-                    .invoke(mBase, who, contextThread, token, target, intent, requestCode, bundle, user);
+                    .invoke(mBase, who, contextThread, token, target, intent, requestCode, options, user);
         } catch (Reflect.ReflectException e) {
             e.printStackTrace();
         }
@@ -58,7 +84,7 @@ public class DynamicInstrumentation extends Instrumentation {
 
     public ActivityResult execStartActivity(
             Context who, IBinder contextThread, IBinder token, String target,
-            Intent intent, int requestCode, Bundle bundle) {
+            Intent intent, int requestCode, Bundle options) {
         ActivityInfo ai = resolveActivity(intent, intent.resolveType(who), DynamicConstants.RESOLVE_ACTIVITY);
 
         if (ai != null) {
@@ -69,7 +95,7 @@ public class DynamicInstrumentation extends Instrumentation {
         try {
             return (ActivityResult) mInstrumentationReflect.setMethod("execStartActivity",
                     Context.class, IBinder.class, IBinder.class, String.class, Intent.class, int.class, Bundle.class)
-                    .invoke(mBase, who, contextThread, token, target, intent, requestCode, bundle);
+                    .invoke(mBase, who, contextThread, token, target, intent, requestCode, options);
         } catch (Reflect.ReflectException e) {
             e.printStackTrace();
         }
@@ -77,7 +103,7 @@ public class DynamicInstrumentation extends Instrumentation {
     }
 
     public ActivityResult execStartActivity(Context who, IBinder contextThread, IBinder token, Activity target,
-                                            Intent intent, int requestCode, Bundle bundle) {
+                                            Intent intent, int requestCode, Bundle options) {
         ActivityInfo ai = resolveActivity(intent, intent.resolveType(who), DynamicConstants.RESOLVE_ACTIVITY);
 
         if (ai != null) {
@@ -88,7 +114,7 @@ public class DynamicInstrumentation extends Instrumentation {
         try {
             return (ActivityResult) mInstrumentationReflect.setMethod("execStartActivity",
                     Context.class, IBinder.class, IBinder.class, Activity.class, Intent.class, int.class, Bundle.class)
-                    .invoke(mBase, who, contextThread, token, target, intent, requestCode, bundle);
+                    .invoke(mBase, who, contextThread, token, target, intent, requestCode, options);
         } catch (Reflect.ReflectException e) {
             e.printStackTrace();
         }
@@ -143,7 +169,6 @@ public class DynamicInstrumentation extends Instrumentation {
         try {
             mContextImplReflect.setField("mResources")
                     .set(activity.getBaseContext(), a.owner.resources);
-            changeTheme(a, mContextImplReflect, activity.getBaseContext());
         } catch (Reflect.ReflectException e) {
             e.printStackTrace();
         }
@@ -151,7 +176,8 @@ public class DynamicInstrumentation extends Instrumentation {
     }
 
     private void hookActivity(DynamicApkParser.Activity a, Activity activity) {
-        DynamicContextImpl dynamicContext = new DynamicContextImpl(activity.getBaseContext(), a.owner);
+        DynamicContextImpl dynamicContext = DynamicContextImpl.createActivityContext(
+                activity.getBaseContext(), a.owner, a.info.getThemeResource());
         try {
             mActivityReflect.setField("mResources")
                     .set(activity, dynamicContext.getResources());

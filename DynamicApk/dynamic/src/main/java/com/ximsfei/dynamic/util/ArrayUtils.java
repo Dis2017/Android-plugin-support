@@ -2,6 +2,9 @@ package com.ximsfei.dynamic.util;
 
 import java.util.ArrayList;
 
+/**
+ * Created by pengfenx on 3/2/2016.
+ */
 public class ArrayUtils {
 
     private ArrayUtils() { /* cannot be instantiated */ }

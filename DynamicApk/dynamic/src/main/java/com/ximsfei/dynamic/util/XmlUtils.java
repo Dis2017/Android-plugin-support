@@ -5,6 +5,9 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 
+/**
+ * Created by pengfenx on 3/2/2016.
+ */
 public class XmlUtils {
     public static void skipCurrentTag(XmlPullParser parser)
             throws XmlPullParserException, IOException {

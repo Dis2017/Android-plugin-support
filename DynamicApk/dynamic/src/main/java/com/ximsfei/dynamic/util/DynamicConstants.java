@@ -1,5 +1,8 @@
 package com.ximsfei.dynamic.util;
 
+/**
+ * Created by pengfenx on 3/2/2016.
+ */
 public interface DynamicConstants {
     String PRIVATE_OPTIMIZED_DEX_DIR = "dynamic_dex";
     String PRIVATE_OPTIMIZED_LIB_DIR = "dynamic_lib";

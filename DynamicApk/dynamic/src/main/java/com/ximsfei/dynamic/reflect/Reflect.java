@@ -10,8 +10,6 @@ import java.lang.reflect.Method;
  */
 public class Reflect {
 
-    private static final String TAG = "Reflect";
-
     public static class ReflectException extends Exception {
         ReflectException(String info) {
             super(info);
@@ -46,8 +44,7 @@ public class Reflect {
             mClass = Class.forName(name);
             return this;
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new IllegalStateException("Class Not Found!");
+            throw new RuntimeException("Class Not Found!");
         }
     }
 
@@ -73,7 +70,6 @@ public class Reflect {
                 mField.setAccessible(true);
                 break;
             } catch (NoSuchFieldException e) {
-                e.printStackTrace();
                 c = c.getSuperclass();
             }
         } while (c != null);
@@ -102,7 +98,6 @@ public class Reflect {
                 mMethod.setAccessible(true);
                 break;
             } catch (NoSuchMethodException e) {
-                e.printStackTrace();
                 c = c.getSuperclass();
             }
         } while (c != null);
@@ -116,7 +111,6 @@ public class Reflect {
         try {
             return (T) mField.get(o);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
         }
         throw new ReflectException("Illegal Access Exception!");
     }
@@ -128,7 +122,6 @@ public class Reflect {
         try {
             mField.set(o, o1);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
         }
     }
 
@@ -139,10 +132,8 @@ public class Reflect {
         try {
             return mMethod.invoke(o, o2);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
             throw new ReflectException("Illegal Access Exception!");
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
             throw new ReflectException("Invocation Target Exception!");
         }
     }
@@ -151,8 +142,7 @@ public class Reflect {
         try {
             return mClass.getConstructor(parameterTypes);
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-            throw new IllegalStateException("No Such Constructor!");
+            throw new RuntimeException("No Such Constructor!");
         }
     }
 }

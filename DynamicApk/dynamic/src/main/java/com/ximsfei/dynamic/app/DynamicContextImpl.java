@@ -1,5 +1,6 @@
 package com.ximsfei.dynamic.app;
 
+import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -19,13 +20,28 @@ public class DynamicContextImpl extends ContextWrapper {
     private final AssetManager mAssets;
     private final ClassLoader mClassLoader;
     private final String mPackageName;
+    private final int mThemeResource;
+    private final Application mApplication;
+    private Resources.Theme mTheme;
 
-    public DynamicContextImpl(Context hostContext, DynamicApkInfo apkInfo) {
+    private DynamicContextImpl(Context hostContext, DynamicApkInfo apkInfo, int themeResource) {
         super(hostContext);
+        mThemeResource = themeResource;
         mResources = apkInfo.resources;
         mAssets = apkInfo.assets;
         mClassLoader = apkInfo.classLoader;
         mPackageName = apkInfo.packageName;
+        mApplication = apkInfo.application;
+    }
+
+    public static DynamicContextImpl createApplicationContext(Context hostContext,
+                                                              DynamicApkInfo apkInfo) {
+        return new DynamicContextImpl(hostContext, apkInfo, apkInfo.applicationInfo.theme);
+    }
+
+    public static DynamicContextImpl createActivityContext(Context hostContext,
+                                                           DynamicApkInfo apkInfo, int themeResource) {
+        return new DynamicContextImpl(hostContext, apkInfo, themeResource);
     }
 
     private LayoutInflater mInflater;
@@ -54,6 +70,19 @@ public class DynamicContextImpl extends ContextWrapper {
     @Override
     public ClassLoader getClassLoader() {
         return mClassLoader;
+    }
+
+    public Context getApplicationContext() {
+        return mApplication;
+    }
+
+    @Override
+    public Resources.Theme getTheme() {
+        if (mTheme == null) {
+            mTheme = mResources.newTheme();
+            mTheme.applyStyle(mThemeResource, true);
+        }
+        return mTheme;
     }
 
     @Override

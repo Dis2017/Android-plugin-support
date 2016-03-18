@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
-import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Looper;
@@ -33,6 +32,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Created by pengfenx on 3/2/2016.
+ */
 public class DynamicApkManager {
     private static final String TAG = "DynamicApkManager";
     private static final boolean DEBUG_PACKAGE_SCANNING = true;
@@ -105,25 +107,25 @@ public class DynamicApkManager {
     }
 
     public void addPackage(DynamicApkInfo info) {
-        DynamicActivityThread.getInstance().installClassLoader(info.classLoader);
-        DynamicActivityThread.getInstance().installContentProviders(info.providers);
         if (mDynamicPackages.get(info.packageName) == null) {
             try {
                 scanApkInfo(info);
             } catch (DynamicApkManagerException e) {
                 e.printStackTrace();
             }
+            DynamicActivityThread.getInstance().installClassLoader(info.classLoader);
+            DynamicActivityThread.getInstance().installContentProviders(info.providers);
+            updateMainActivity();
+            registerStaticBroadcastReceiver(info);
+            mDynamicPackages.put(info.packageName, info);
         }
-        updateMainActivity();
-        registerStaticBroadcastReceiver(info);
-        mDynamicPackages.put(info.packageName, info);
     }
 
     public DynamicApkInfo getPackage(String pkgName) {
         return mDynamicPackages.get(pkgName);
     }
 
-    public void registerStaticBroadcastReceiver(DynamicApkInfo info) {
+    private void registerStaticBroadcastReceiver(DynamicApkInfo info) {
         int N = info.receivers.size();
         for (int i = 0; i < N; i++) {
             int M = info.receivers.get(i).intents.size();
