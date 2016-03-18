@@ -1249,17 +1249,17 @@ public class DynamicApkParser {
             owner.mRequiredForAllUsers = true;
         }
 
-        String restrictedAccountType = sa.getString(R.styleable
-                .AndroidManifestApplication_restrictedAccountType);
-        if (restrictedAccountType != null && restrictedAccountType.length() > 0) {
-            owner.mRestrictedAccountType = restrictedAccountType;
-        }
+        // String restrictedAccountType = sa.getString(R.styleable
+        //         .AndroidManifestApplication_restrictedAccountType);
+        // if (restrictedAccountType != null && restrictedAccountType.length() > 0) {
+        //     owner.mRestrictedAccountType = restrictedAccountType;
+        // }
 
-        String requiredAccountType = sa.getString(R.styleable
-                .AndroidManifestApplication_requiredAccountType);
-        if (requiredAccountType != null && requiredAccountType.length() > 0) {
-            owner.mRequiredAccountType = requiredAccountType;
-        }
+        // String requiredAccountType = sa.getString(R.styleable
+        //         .AndroidManifestApplication_requiredAccountType);
+        // if (requiredAccountType != null && requiredAccountType.length() > 0) {
+        //     owner.mRequiredAccountType = requiredAccountType;
+        // }
 
         if (sa.getBoolean(
                 Hooks.getStyleable("AndroidManifestApplication_debuggable"),
