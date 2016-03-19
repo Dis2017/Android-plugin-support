@@ -21,7 +21,7 @@ DynamicApkManager.getInstance().getMainActivities();
 ##DynamicApk/dynamic/:
 该目录下为DynamicDeploymentApk插件化框架代码，完全实现从非安装apk中，非代理模式启动Activity，Service，BroadcastReceiver，ContentProvider
 代码为最初版本，暂时仅实现功能，后续还要进行大量重构，优化；
-由于测试机有限，且不同Android版本API存在部分差异，暂时只在Android 4.4, 5.0, 6.0上测试。
+由于测试机有限，且不同Android版本API存在部分差异，暂时只在Android 5.0, 6.0上测试。
 有兴趣的同学可以和我一起来交流，维护。
 
 ##Plugin-simple/:
