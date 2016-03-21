@@ -14,6 +14,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.UserHandle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.Window;
 
 import com.ximsfei.dynamic.DynamicApkManager;
 import com.ximsfei.dynamic.util.DynamicConstants;
@@ -133,14 +136,14 @@ public class DynamicInstrumentation extends Instrumentation {
         super.callApplicationOnCreate(app);
     }
 
-        @Override
+    @Override
     public void callActivityOnCreate(Activity activity, Bundle icicle) {
         String clsName = activity.getIntent().getStringExtra(DynamicConstants.DYNAMIC_ACTIVITY_FLAG);
         DynamicApkParser.Activity a = (DynamicApkParser.Activity)
                 DynamicApkManager.getInstance()
                         .queryClassName(clsName,
                                 DynamicConstants.RESOLVE_ACTIVITY);
-        if (a != null) hookContext(a, activity);
+        if (a != null) hookActivity(a, activity);
 
         super.callActivityOnCreate(activity, icicle);
     }
@@ -164,12 +167,6 @@ public class DynamicInstrumentation extends Instrumentation {
         return null;
     }
 
-    private void hookContext(DynamicApkParser.Activity a, Activity activity) {
-        mContextImplReflect.setField("mResources")
-                .set(activity.getBaseContext(), a.owner.resources);
-        hookActivity(a, activity);
-    }
-
     private void hookActivity(DynamicApkParser.Activity a, Activity activity) {
         DynamicContextImpl dynamicContext = DynamicContextImpl.createActivityContext(
                 activity.getBaseContext(), a.owner, a.info.getThemeResource());
@@ -182,6 +179,14 @@ public class DynamicInstrumentation extends Instrumentation {
                     .set(activity, a.owner.application);
             mActivityReflect.setField("mActivityInfo")
                     .set(activity, a.info);
+//            Window window = activity.getWindow();
+//            View decor = window.getDecorView();
+//            Reflect.create(window.getClass()).setField("mContext").set(window,
+//                    dynamicContext);
+//            Reflect.create(decor.getClass()).setField("mContext").set(decor,
+//                    dynamicContext);
+//            Reflect.create(window.getClass()).setField("mLayoutInflater").set(window,
+//                    LayoutInflater.from(dynamicContext));
             changeTheme(a, mActivityReflect, activity);
         } catch (Reflect.ReflectException e) {
             e.printStackTrace();

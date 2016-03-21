@@ -48,20 +48,19 @@ public class Reflect {
         }
     }
 
-    public Reflect setField(Field f) throws ReflectException {
-        Class c = mClass;
-        if (c == null) {
-            throw new ReflectException("You must invoke setClass() first!");
+    public Reflect setField(Field f) {
+        if (mClass == null) {
+            throw new RuntimeException("mClass can not be null !");
         }
 
         mField = f;
         return this;
     }
 
-    public Reflect setField(String name) throws ReflectException {
+    public Reflect setField(String name) {
         Class c = mClass;
         if (c == null) {
-            throw new ReflectException("You must invoke setClass() first!");
+            throw new RuntimeException("mClass can not be null !");
         }
 
         do {
@@ -76,20 +75,19 @@ public class Reflect {
         return this;
     }
 
-    public Reflect setMethod(Method m) throws ReflectException {
-        Class c = mClass;
-        if (c == null) {
-            throw new ReflectException("You must invoke setClass() first!");
+    public Reflect setMethod(Method m) {
+        if (mClass == null) {
+            throw new RuntimeException("mClass can not be null !");
         }
 
         mMethod = m;
         return this;
     }
 
-    public Reflect setMethod(String name, Class... parameterTypes) throws ReflectException {
+    public Reflect setMethod(String name, Class... parameterTypes) {
         Class c = mClass;
         if (c == null) {
-            throw new ReflectException("You must invoke setClass() first!");
+            throw new RuntimeException("mClass can not be null !");
         }
 
         do {
@@ -106,7 +104,7 @@ public class Reflect {
 
     public <T> T get(Object o) throws ReflectException {
         if (mField == null) {
-            throw new ReflectException("You must invoke setMethod() first!");
+            throw new RuntimeException("You must invoke setMethod() first!");
         }
         try {
             return (T) mField.get(o);
@@ -115,9 +113,9 @@ public class Reflect {
         throw new ReflectException("Illegal Access Exception!");
     }
 
-    public void set(Object o, Object o1) throws ReflectException {
+    public void set(Object o, Object o1) {
         if (mField == null) {
-            throw new ReflectException("You must invoke setField() first!");
+            throw new RuntimeException("You must invoke setField() first!");
         }
         try {
             mField.set(o, o1);
@@ -127,7 +125,7 @@ public class Reflect {
 
     public Object invoke(Object o, Object... o2) throws ReflectException {
         if (mMethod == null) {
-            throw new ReflectException("You must invoke setMethod() first!");
+            throw new RuntimeException("You must invoke setMethod() first!");
         }
         try {
             return mMethod.invoke(o, o2);

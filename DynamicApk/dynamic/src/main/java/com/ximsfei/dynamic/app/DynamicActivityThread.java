@@ -36,6 +36,17 @@ public class DynamicActivityThread {
         return sDynamicActivityThread;
     }
 
+    public synchronized ClassLoader getClassLoader() {
+        Object loadedApk = ((WeakReference) getPackages().get(getHostPackageName())).get();
+        try {
+            return (ClassLoader) Reflect.create(loadedApk.getClass())
+                    .setMethod("getClassLoader").invoke(loadedApk);
+        } catch (Reflect.ReflectException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public synchronized void installClassLoader(ClassLoader classLoader) {
         Object loadedApk = ((WeakReference) getPackages().get(getHostPackageName())).get();
         try {
@@ -133,12 +144,8 @@ public class DynamicActivityThread {
     }
 
     public synchronized void setInstrumentation(Instrumentation instrumentation) {
-        try {
-            mActivityThreadReflect.setField("mInstrumentation").set(
-                    currentActivityThread(), instrumentation);
-            mInstrumentation = instrumentation;
-        } catch (Reflect.ReflectException e) {
-            e.printStackTrace();
-        }
+        mActivityThreadReflect.setField("mInstrumentation").set(
+                currentActivityThread(), instrumentation);
+        mInstrumentation = instrumentation;
     }
 }

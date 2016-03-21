@@ -42,7 +42,7 @@ public class DynamicApkManager {
 
     public static DynamicApkManager sDynamicApk;
     private Context mApplicationContext;
-    public final HashMap<String, DynamicApkInfo> mDynamicPackages;
+    public final ArrayList<String> mDynamicPackages;
     public final HashMap<String, ActivityInfo> mDynamicMainActivities;
 
     // All available activities, for your resolving pleasure.
@@ -59,19 +59,16 @@ public class DynamicApkManager {
 
     // Mapping from provider base names (first directory in content URI codePath)
     // to the provider information.
-    final ArrayMap<String, DynamicApkParser.Provider> mProvidersByAuthority =
-            new ArrayMap<String, DynamicApkParser.Provider>();
+    final ArrayMap<String, DynamicApkParser.Provider> mProvidersByAuthority = new ArrayMap<>();
 
     // Mapping from instrumentation class names to info about them.
-    final ArrayMap<ComponentName, DynamicApkParser.Instrumentation> mInstrumentation =
-            new ArrayMap<ComponentName, DynamicApkParser.Instrumentation>();
+    final ArrayMap<ComponentName, DynamicApkParser.Instrumentation> mInstrumentation = new ArrayMap<>();
 
     // Mapping from permission names to info about them.
-    final ArrayMap<String, DynamicApkParser.PermissionGroup> mPermissionGroups =
-            new ArrayMap<String, DynamicApkParser.PermissionGroup>();
+    final ArrayMap<String, DynamicApkParser.PermissionGroup> mPermissionGroups = new ArrayMap<>();
 
     // Broadcast actions that are only available to the system.
-    final ArraySet<String> mProtectedBroadcasts = new ArraySet<String>();
+    final ArraySet<String> mProtectedBroadcasts = new ArraySet<>();
 
     private DynamicApkManager(Context context) {
         if (Looper.myLooper() != Looper.getMainLooper()) {
@@ -79,7 +76,7 @@ public class DynamicApkManager {
                     "DynamicApk must be instantiated in UI Thread!");
         }
         mApplicationContext = context;
-        mDynamicPackages = new HashMap();
+        mDynamicPackages = new ArrayList<>();
         mDynamicMainActivities = new HashMap();
 
         Instrumentation instrumentation = DynamicActivityThread.getInstance().getInstrumentation();
@@ -97,7 +94,7 @@ public class DynamicApkManager {
 
     public static DynamicApkManager getInstance() {
         if (sDynamicApk == null) {
-            throw new IllegalStateException("Please invoke newInstance(context) firstly!");
+            throw new IllegalStateException("Please invoke init(context) firstly!");
         }
         return sDynamicApk;
     }
@@ -107,16 +104,14 @@ public class DynamicApkManager {
     }
 
     public void addPackage(DynamicApkInfo info) {
-        if (mDynamicPackages.get(info.packageName) == null) {
-            try {
-                scanApkInfo(info);
-            } catch (DynamicApkManagerException e) {
-                e.printStackTrace();
-            }
+        try {
+            scanApkInfo(info);
             DynamicActivityThread.getInstance().installClassLoader(info.classLoader);
             DynamicActivityThread.getInstance().installContentProviders(info.providers);
             updateMainActivity();
             registerStaticBroadcastReceiver(info);
+        } catch (DynamicApkManagerException e) {
+            e.printStackTrace();
         }
     }
 
@@ -194,14 +189,14 @@ public class DynamicApkManager {
     }
 
     private void scanApkInfo(DynamicApkInfo info) throws DynamicApkManagerException {
-        if (mDynamicPackages.containsKey(info.packageName)) {
+        if (mDynamicPackages.contains(info.packageName)) {
             throw new DynamicApkManagerException(INSTALL_FAILED_DUPLICATE_PACKAGE,
                     "Application package " + info.packageName
                             + " already installed.  Skipping duplicate.");
         }
 
         synchronized (mDynamicPackages) {
-            mDynamicPackages.put(info.applicationInfo.packageName, info);
+            mDynamicPackages.add(info.packageName);
             int N = info.providers.size();
             StringBuilder r = null;
             int i;
@@ -357,8 +352,8 @@ public class DynamicApkManager {
                 a.info.packageName = info.applicationInfo.packageName;
                 a.info.sourceDir = info.applicationInfo.sourceDir;
                 a.info.publicSourceDir = info.applicationInfo.publicSourceDir;
-                a.info.splitSourceDirs = info.applicationInfo.splitSourceDirs;
-                a.info.splitPublicSourceDirs = info.applicationInfo.splitPublicSourceDirs;
+//                a.info.splitSourceDirs = info.applicationInfo.splitSourceDirs;
+//                a.info.splitPublicSourceDirs = info.applicationInfo.splitPublicSourceDirs;
                 a.info.dataDir = info.applicationInfo.dataDir;
 
                 // TODO: Update instrumentation.nativeLibraryDir as well ? Does it

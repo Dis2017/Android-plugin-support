@@ -11,7 +11,7 @@ import com.ximsfei.dynamic.reflect.Reflect;
  */
 public class DynamicLoadedApk {
 
-    public static Application makeApplication(Context applicationContext, ClassLoader cl,
+    public static Application makeDynamicApplication(Context applicationContext, ClassLoader cl,
                                               DynamicApkInfo apkInfo) {
         Application app = null;
 

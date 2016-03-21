@@ -235,7 +235,7 @@ public class DynamicApkParser {
             pkg.classLoader = classLoader;
             pkg.assets = assets;
             pkg.resources = res;
-            pkg.application = DynamicLoadedApk.makeApplication(context, classLoader, pkg);
+            pkg.application = DynamicLoadedApk.makeDynamicApplication(context, classLoader, pkg);
             return pkg;
         } catch (DynamicApkParserException e) {
             throw e;
