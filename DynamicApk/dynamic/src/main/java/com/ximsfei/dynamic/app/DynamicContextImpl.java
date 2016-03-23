@@ -30,7 +30,6 @@ public class DynamicContextImpl extends ContextWrapper {
         mResources = apkInfo.resources;
         mAssets = apkInfo.assets;
         mClassLoader = apkInfo.classLoader;
-//        mClassLoader = DynamicActivityThread.getInstance().getClassLoader();
         mPackageName = apkInfo.packageName;
         mApplication = apkInfo.application;
     }

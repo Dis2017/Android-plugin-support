@@ -97,10 +97,6 @@ public class DynamicApkParser {
                             android.os.Build.VERSION_CODES.DONUT, 0)
             };
 
-    /**
-     * @deprecated callers should move to explicitly passing around source path.
-     */
-    @Deprecated
     private String mArchiveSourcePath;
 
     private int mParseError = INSTALL_SUCCEEDED;

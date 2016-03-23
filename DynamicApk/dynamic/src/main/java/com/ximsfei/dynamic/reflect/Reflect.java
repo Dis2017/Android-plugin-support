@@ -10,59 +10,32 @@ import java.lang.reflect.Method;
  */
 public class Reflect {
 
-    public static class ReflectException extends Exception {
-        ReflectException(String info) {
-            super(info);
-        }
-    }
-
-    private Class mClass;
+    private final Class mClass;
     private Field mField;
     private Method mMethod;
 
-    public static Reflect create(Class c) {
-        Reflect reflect = new Reflect();
-        reflect.setClass(c);
-        return reflect;
-    }
-
-    public static Reflect create(String name) {
-        Reflect reflect = new Reflect();
-        reflect.setClass(name);
-        return reflect;
-    }
-
-    private Reflect() {
-    }
-
-    private void setClass(Class c) {
+    private Reflect(Class c) {
         mClass = c;
     }
 
-    private Reflect setClass(String name) {
+    private Reflect(String name) {
         try {
             mClass = Class.forName(name);
-            return this;
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Class Not Found!");
+            throw new RuntimeException(e);
         }
     }
 
-    public Reflect setField(Field f) {
-        if (mClass == null) {
-            throw new RuntimeException("mClass can not be null !");
-        }
+    public static Reflect create(Class c) {
+        return new Reflect(c);
+    }
 
-        mField = f;
-        return this;
+    public static Reflect create(String name) {
+        return new Reflect(name);
     }
 
     public Reflect setField(String name) {
         Class c = mClass;
-        if (c == null) {
-            throw new RuntimeException("mClass can not be null !");
-        }
-
         do {
             try {
                 mField = c.getDeclaredField(name);
@@ -72,24 +45,13 @@ public class Reflect {
                 c = c.getSuperclass();
             }
         } while (c != null);
-        return this;
-    }
 
-    public Reflect setMethod(Method m) {
-        if (mClass == null) {
-            throw new RuntimeException("mClass can not be null !");
-        }
-
-        mMethod = m;
+        if (mField == null) throw new RuntimeException("No Such Field!");
         return this;
     }
 
     public Reflect setMethod(String name, Class... parameterTypes) {
         Class c = mClass;
-        if (c == null) {
-            throw new RuntimeException("mClass can not be null !");
-        }
-
         do {
             try {
                 mMethod = c.getDeclaredMethod(name, parameterTypes);
@@ -99,40 +61,33 @@ public class Reflect {
                 c = c.getSuperclass();
             }
         } while (c != null);
+
+        if (mMethod == null) throw new RuntimeException("No Such Method!");
         return this;
     }
 
-    public <T> T get(Object o) throws ReflectException {
-        if (mField == null) {
-            throw new RuntimeException("You must invoke setMethod() first!");
-        }
+    public <T> T get(Object o) {
         try {
             return (T) mField.get(o);
         } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
-        throw new ReflectException("Illegal Access Exception!");
     }
 
     public void set(Object o, Object o1) {
-        if (mField == null) {
-            throw new RuntimeException("You must invoke setField() first!");
-        }
         try {
             mField.set(o, o1);
         } catch (IllegalAccessException e) {
         }
     }
 
-    public Object invoke(Object o, Object... o2) throws ReflectException {
-        if (mMethod == null) {
-            throw new RuntimeException("You must invoke setMethod() first!");
-        }
+    public <T> T invoke(Object o, Object... o2) {
         try {
-            return mMethod.invoke(o, o2);
+            return (T) mMethod.invoke(o, o2);
         } catch (IllegalAccessException e) {
-            throw new ReflectException("Illegal Access Exception!");
+            throw new RuntimeException(e);
         } catch (InvocationTargetException e) {
-            throw new ReflectException("Invocation Target Exception!");
+            throw new RuntimeException(e);
         }
     }
 

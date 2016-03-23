@@ -13,8 +13,7 @@ public class Hooks {
     public static int[] getStyleableArray(String name) {
         try {
             return (int[]) R_STYLEABLE_REFLECT.setField(name).get(null);
-        } catch (Reflect.ReflectException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
         }
         return new int[0];
     }
@@ -22,8 +21,7 @@ public class Hooks {
     public static int getStyleable(String name) {
         try {
             return (int) R_STYLEABLE_REFLECT.setField(name).get(null);
-        } catch (Reflect.ReflectException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
         }
         return 0;
     }
@@ -32,8 +30,7 @@ public class Hooks {
         try {
             return (int) ASSET_MANAGER_REFLECT.setMethod("addAssetPath", String.class)
                     .invoke(assets, apkPath);
-        } catch (Reflect.ReflectException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
         }
         return 0;
     }

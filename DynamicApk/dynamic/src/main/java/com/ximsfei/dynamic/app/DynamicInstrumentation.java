@@ -30,13 +30,11 @@ import java.util.List;
  */
 public class DynamicInstrumentation extends Instrumentation {
     private final Instrumentation mBase;
-    private final Reflect mContextImplReflect;
     private final Reflect mActivityReflect;
     private final Reflect mInstrumentationReflect;
 
     public DynamicInstrumentation(Instrumentation base) {
         mBase = base;
-        mContextImplReflect = Reflect.create("android.app.ContextImpl");
         mActivityReflect = Reflect.create(Activity.class);
         mInstrumentationReflect = Reflect.create(Instrumentation.class);
     }
@@ -57,8 +55,7 @@ public class DynamicInstrumentation extends Instrumentation {
                     Context.class, IBinder.class, IBinder.class, Fragment.class, Intent.class,
                     int.class, Bundle.class)
                     .invoke(mBase, who, contextThread, token, target, intent, requestCode, options);
-        } catch (Reflect.ReflectException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
         }
         return null;
     }
@@ -78,8 +75,7 @@ public class DynamicInstrumentation extends Instrumentation {
                     Context.class, IBinder.class, IBinder.class, Activity.class, Intent.class,
                     int.class, Bundle.class, UserHandle.class)
                     .invoke(mBase, who, contextThread, token, target, intent, requestCode, options, user);
-        } catch (Reflect.ReflectException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
         }
         return null;
     }
@@ -98,8 +94,7 @@ public class DynamicInstrumentation extends Instrumentation {
             return (ActivityResult) mInstrumentationReflect.setMethod("execStartActivity",
                     Context.class, IBinder.class, IBinder.class, String.class, Intent.class, int.class, Bundle.class)
                     .invoke(mBase, who, contextThread, token, target, intent, requestCode, options);
-        } catch (Reflect.ReflectException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
         }
         return null;
     }
@@ -117,8 +112,7 @@ public class DynamicInstrumentation extends Instrumentation {
             return (ActivityResult) mInstrumentationReflect.setMethod("execStartActivity",
                     Context.class, IBinder.class, IBinder.class, Activity.class, Intent.class, int.class, Bundle.class)
                     .invoke(mBase, who, contextThread, token, target, intent, requestCode, options);
-        } catch (Reflect.ReflectException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
         }
         return null;
     }
@@ -170,32 +164,39 @@ public class DynamicInstrumentation extends Instrumentation {
     private void hookActivity(DynamicApkParser.Activity a, Activity activity) {
         DynamicContextImpl dynamicContext = DynamicContextImpl.createActivityContext(
                 activity.getBaseContext(), a.owner, a.info.getThemeResource());
-        try {
-            mActivityReflect.setField("mResources")
-                    .set(activity, dynamicContext.getResources());
-            mActivityReflect.setField("mBase")
-                    .set(activity, dynamicContext);
-            mActivityReflect.setField("mApplication")
-                    .set(activity, a.owner.application);
-            mActivityReflect.setField("mActivityInfo")
-                    .set(activity, a.info);
-//            Window window = activity.getWindow();
-//            View decor = window.getDecorView();
-//            Reflect.create(window.getClass()).setField("mContext").set(window,
-//                    dynamicContext);
-//            Reflect.create(decor.getClass()).setField("mContext").set(decor,
-//                    dynamicContext);
-//            Reflect.create(window.getClass()).setField("mLayoutInflater").set(window,
-//                    LayoutInflater.from(dynamicContext));
-            changeTheme(a, mActivityReflect, activity);
-        } catch (Reflect.ReflectException e) {
-            e.printStackTrace();
-        }
+        mActivityReflect.setField("mResources")
+                .set(activity, dynamicContext.getResources());
+        mActivityReflect.setField("mBase")
+                .set(activity, dynamicContext);
+        mActivityReflect.setField("mApplication")
+                .set(activity, a.owner.application);
+        mActivityReflect.setField("mActivityInfo")
+                .set(activity, a.info);
+        changeTheme(a, mActivityReflect, activity);
+        hookPhoneWindow(activity, dynamicContext);
         changeTitle(a, activity);
     }
 
-    private void changeTheme(DynamicApkParser.Activity a, Reflect r, Object o)
-            throws Reflect.ReflectException {
+    private void hookPhoneWindow(Activity activity, DynamicContextImpl dynamicContext) {
+        Window window = activity.getWindow();
+        View decor = window.getDecorView();
+        Reflect.create(window.getClass()).setField("mContext").set(window,
+                dynamicContext);
+        Reflect.create(decor.getClass()).setField("mContext").set(decor,
+                dynamicContext);
+        View contentParent = Reflect.create(window.getClass())
+                .setField("mContentParent").get(window);
+        Reflect.create(contentParent.getClass())
+                .setField("mContext").set(contentParent, dynamicContext);
+        View contentRoot = Reflect.create(window.getClass())
+                .setField("mContentRoot").get(window);
+        Reflect.create(contentParent.getClass()).setField("mContext")
+                .set(contentRoot, dynamicContext);
+        Reflect.create(window.getClass()).setField("mLayoutInflater")
+                .set(window, LayoutInflater.from(dynamicContext));
+    }
+
+    private void changeTheme(DynamicApkParser.Activity a, Reflect r, Object o) {
         if (a.info.getThemeResource() != 0) {
             Resources.Theme theme = a.owner.resources.newTheme();
             theme.applyStyle(a.info.getThemeResource(), true);

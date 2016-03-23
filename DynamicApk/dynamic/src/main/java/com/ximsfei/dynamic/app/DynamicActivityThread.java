@@ -41,8 +41,7 @@ public class DynamicActivityThread {
         try {
             return (ClassLoader) Reflect.create(loadedApk.getClass())
                     .setMethod("getClassLoader").invoke(loadedApk);
-        } catch (Reflect.ReflectException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
         }
         return null;
     }
@@ -61,8 +60,7 @@ public class DynamicActivityThread {
             } else {
                 ((DynamicClassLoaderWrapper) cl).addClassLoader(classLoader);
             }
-        } catch (Reflect.ReflectException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
         }
     }
 
@@ -79,8 +77,7 @@ public class DynamicActivityThread {
         if (mPackages == null) {
             try {
                 mPackages = mActivityThreadReflect.setField("mPackages").get(currentActivityThread());
-            } catch (Reflect.ReflectException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
             }
         }
         return mPackages;
@@ -91,8 +88,7 @@ public class DynamicActivityThread {
             mActivityThreadReflect.setMethod("installContentProviders", Context.class, List.class)
                     .invoke(currentActivityThread(), getInitialApplication(),
                             generateProviderInfos(providers));
-        } catch (Reflect.ReflectException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
         }
     }
 
@@ -110,9 +106,8 @@ public class DynamicActivityThread {
         if (mActivityThread == null) {
             try {
                 mActivityThread = mActivityThreadReflect.setMethod("currentActivityThread").invoke(null);
-            } catch (Reflect.ReflectException e) {
-                e.printStackTrace();
-                throw new IllegalStateException(e);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }
         return mActivityThread;
@@ -123,9 +118,8 @@ public class DynamicActivityThread {
             try {
                 mInitialApplication = mActivityThreadReflect.setField("mInitialApplication")
                         .get(currentActivityThread());
-            } catch (Reflect.ReflectException e) {
-                e.printStackTrace();
-                throw new IllegalStateException(e);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }
         return mInitialApplication;
@@ -136,8 +130,7 @@ public class DynamicActivityThread {
             try {
                 mInstrumentation = mActivityThreadReflect.setField("mInstrumentation")
                         .get(currentActivityThread());
-            } catch (Reflect.ReflectException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
             }
         }
         return mInstrumentation;
