@@ -47,6 +47,9 @@ http://blog.csdn.net/ximsfei/article/details/50886134
 Android动态部署三：如何从插件apk中启动Activity（－）
 http://blog.csdn.net/ximsfei/article/details/50926406
 
+Android动态部署四：如何从插件apk中启动Activity（二）
+http://blog.csdn.net/ximsfei/article/details/51063454
+
 ## License
 
 The MIT License (MIT)
