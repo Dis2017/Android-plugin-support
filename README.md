@@ -38,23 +38,23 @@ DynamicApkManager.getInstance().getMainActivities();
 
 ##以下是我在csdn上对插件化原理做的同步讲解，希望大家多多支持吧：
 
-Android动态部署一：Google原生Split APK浅析
-http://blog.csdn.net/ximsfei/article/details/50884862
+[Android动态部署一：Google原生Split APK浅析]
+(http://blog.csdn.net/ximsfei/article/details/50884862)
 
-Android动态部署二：APK安装及AndroidManifest.xml解析流程分析
-http://blog.csdn.net/ximsfei/article/details/50886134
+[Android动态部署二：APK安装及AndroidManifest.xml解析流程分析]
+(http://blog.csdn.net/ximsfei/article/details/50886134)
 
-Android动态部署三：如何从插件apk中启动Activity（－）
-http://blog.csdn.net/ximsfei/article/details/50926406
+[Android动态部署三：如何从插件apk中启动Activity（－）]
+(http://blog.csdn.net/ximsfei/article/details/50926406)
 
-Android动态部署四：如何从插件apk中启动Activity（二）
-http://blog.csdn.net/ximsfei/article/details/51063454
+[Android动态部署四：如何从插件apk中启动Activity（二）]
+(http://blog.csdn.net/ximsfei/article/details/51063454)
 
-Android动态部署五：如何从插件apk中启动Service
-http://blog.csdn.net/ximsfei/article/details/51072332
+[Android动态部署五：如何从插件apk中启动Service]
+(http://blog.csdn.net/ximsfei/article/details/51072332)
 
-Android动态部署六：如何从插件apk中启动BroadcastReceiver和ContentProvider
-http://blog.csdn.net/ximsfei/article/details/51083464
+[Android动态部署六：如何从插件apk中启动BroadcastReceiver和ContentProvider]
+(http://blog.csdn.net/ximsfei/article/details/51083464)
 
 ## License
 
